@@ -1,4 +1,4 @@
-"""Methods for normalizing/sanitizing steemd account metadata."""
+"""Methods for normalizing/sanitizing dpayd account metadata."""
 
 import ujson as json
 from hive.utils.normalize import trunc

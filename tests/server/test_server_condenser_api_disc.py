@@ -31,13 +31,13 @@ async def test_get_follow_count():
 
 @pytest.mark.asyncio
 async def test_get_content():
-    post = await get_content('xeroc', 'python-steem-0-1')
+    post = await get_content('xeroc', 'python-dpay-0-1')
     assert post
     assert post['author'] == 'xeroc'
 
 @pytest.mark.asyncio
 async def test_get_content_replies():
-    replies = await get_content_replies('xeroc', 'python-steem-0-1')
+    replies = await get_content_replies('xeroc', 'python-dpay-0-1')
     assert replies
     assert len(replies) > 0
     assert 'puppies' in [r['author'] for r in replies]

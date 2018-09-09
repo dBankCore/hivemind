@@ -1,0 +1,1 @@
+"""DPayd API client."""

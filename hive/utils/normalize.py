@@ -1,4 +1,4 @@
-"""Methods to parse steemd values and clean strings."""
+"""Methods to parse dpayd values and clean strings."""
 
 import logging
 import math
@@ -8,8 +8,8 @@ from pytz import utc
 import ujson as json
 
 NAI_MAP = {
-    '@@000000013': 'SBD',
-    '@@000000021': 'STEEM',
+    '@@000000013': 'BBD',
+    '@@000000021': 'BEX',
     '@@000000037': 'VESTS',
 }
 
@@ -17,16 +17,16 @@ def vests_amount(value):
     """Returns a decimal amount, asserting units are VESTS"""
     return parse_amount(value, 'VESTS')
 
-def steem_amount(value):
-    """Returns a decimal amount, asserting units are STEEM"""
-    return parse_amount(value, 'STEEM')
+def dpay_amount(value):
+    """Returns a decimal amount, asserting units are BEX"""
+    return parse_amount(value, 'BEX')
 
-def sbd_amount(value):
-    """Returns a decimal amount, asserting units are SBD"""
-    return parse_amount(value, 'SBD')
+def bbd_amount(value):
+    """Returns a decimal amount, asserting units are BBD"""
+    return parse_amount(value, 'BBD')
 
 def parse_amount(value, expected_unit=None):
-    """Parse steemd-style amout/asset value, return (decimal, name)."""
+    """Parse dpayd-style amout/asset value, return (decimal, name)."""
     if isinstance(value, dict):
         value = [value['amount'], value['precision'], value['nai']]
 
@@ -51,7 +51,7 @@ def parse_amount(value, expected_unit=None):
     return (dec_amount, unit)
 
 def amount(string):
-    """Parse a steemd asset-amount as a Decimal(). Discard asset type."""
+    """Parse a dpayd asset-amount as a Decimal(). Discard asset type."""
     return parse_amount(string)[0]
 
 def legacy_amount(value):
@@ -59,7 +59,7 @@ def legacy_amount(value):
     if isinstance(value, str):
         return value # already legacy
     amt, asset = parse_amount(value)
-    prec = {'SBD': 3, 'STEEM': 3, 'VESTS': 6}[asset]
+    prec = {'BBD': 3, 'BEX': 3, 'VESTS': 6}[asset]
     tmpl = ("%%.%df %%s" % prec)
     return tmpl % (amt, asset)
 
@@ -113,7 +113,7 @@ def secs_to_str(secs):
     return ' '.join(["%02d%s" % tup for tup in out[::-1]])
 
 def rep_log10(rep):
-    """Convert raw steemd rep into a UI-ready value centered at 25."""
+    """Convert raw dpayd rep into a UI-ready value centered at 25."""
     def _log10(string):
         leading_digits = int(string[0:4])
         log = math.log10(leading_digits) + 0.00000001

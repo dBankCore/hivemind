@@ -70,8 +70,8 @@ class StatsAbstract:
         self.clear()
 
 
-class SteemStats(StatsAbstract):
-    """Tracks Steem client call timings."""
+class DPayStats(StatsAbstract):
+    """Tracks DPay client call timings."""
 
     # Assumed HTTP overhead (ms); subtract prior to par check
     PAR_HTTP_OVERHEAD = 75
@@ -80,7 +80,7 @@ class SteemStats(StatsAbstract):
     PAR_THRESHOLD = 1.1
 
     # Thresholds for critical call timing (ms)
-    PAR_STEEMD = {
+    PAR_DPAYD = {
         'get_dynamic_global_properties': 20,
         'get_block': 50,
         'get_blocks_batch': 5,
@@ -91,17 +91,17 @@ class SteemStats(StatsAbstract):
     }
 
     def __init__(self):
-        super().__init__('steem')
+        super().__init__('dpay')
 
     def check_timing(self, call, ms, batch_size):
         """Warn if a request (accounting for batch size) is too slow."""
         if call == 'get_block' and batch_size > 1:
             call = 'get_blocks_batch'
         per = int((ms - self.PAR_HTTP_OVERHEAD) / batch_size)
-        par = self.PAR_STEEMD[call]
+        par = self.PAR_DPAYD[call]
         over = per / par
         if over >= self.PAR_THRESHOLD:
-            out = ("[STEEM][%dms] %s[%d] -- %.1fx par (%d/%d)"
+            out = ("[DPAY][%dms] %s[%d] -- %.1fx par (%d/%d)"
                    % (ms, call, batch_size, over, per, par))
             log.warning(colorize(out))
 
@@ -121,11 +121,11 @@ class DbStats(StatsAbstract):
 
 
 class Stats:
-    """Container for steemd and db timing data."""
+    """Container for dpayd and db timing data."""
     PRINT_THRESH_MINS = 5
 
     _db = DbStats()
-    _steemd = SteemStats()
+    _dpayd = DPayStats()
     _ms = 0.0
     _idle = 0.0
     _start = perf()
@@ -138,9 +138,9 @@ class Stats:
         cls.add_ms(ms)
 
     @classmethod
-    def log_steem(cls, method, ms, batch_size=1):
-        """Log a steemd call."""
-        cls._steemd.add(method, ms, batch_size)
+    def log_dpay(cls, method, ms, batch_size=1):
+        """Log a dpayd call."""
+        cls._dpayd.add(method, ms, batch_size)
         cls.add_ms(ms)
 
     @classmethod
@@ -172,6 +172,6 @@ class Stats:
                  100 * idle / total, peak_usage_mb())
         if local > 1:
             cls._db.report(cls._ms)
-            cls._steemd.report(cls._ms)
+            cls._dpayd.report(cls._ms)
 
 atexit.register(Stats.report)

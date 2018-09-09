@@ -67,7 +67,7 @@ class BlockSchedule:
     def _check_head_date(self, num, date):
         """Sanity-checking of head block date.
 
-        It's possible a steemd node could fall behind or stop syncing;
+        It's possible a dpayd node could fall behind or stop syncing;
         we can identify this case by comparing current time to latest
         received block time."""
         if num == self._head_num:

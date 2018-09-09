@@ -1,14 +1,12 @@
-# Steem Communities
+# DPay Communities
 
 Initial spec, 2017
 
 ## Overview
 
-As described in the *[Steemit 2017 Roadmap](https://steem.io/2017roadmap.pdf)*:
-
 > We believe that high-quality content and communities of content producers and their
-audiences are the primary driver of growth of the steemit.com site, and in turn the wider
-adoption of the platform and STEEM. To this end, we wish to enable many users to build
+audiences are the primary driver of growth of the dsite.com site, and in turn the wider
+adoption of the platform and dPay. To this end, we wish to enable many users to build
 communities in parallel around curating specific types of content valuable to their audiences.
 
 > To enable this, we intend to augment our current tag-based organizational structure for posts
@@ -20,7 +18,7 @@ delegated authors’) posts will appear.
 
 > This system of moderation will function identically to the aforementioned comment
 moderation system, with all content (including hidden or moderated content) published
-permanently in the blockchain to prevent censorship. The steemit.com web site will respect
+permanently in the blockchain to prevent censorship. The dsite.com web site will respect
 the display preferences of the specific community maintainers (within their own community
 namespace only) while simultaneously propagating every participant’s voice throughout the
 blockchain to the entire world (regardless of moderator opinions).
@@ -33,9 +31,9 @@ whilst simultaneously preventing any type of censorship.
 > It is our hope and design goal for our services (all of which are published with full source code
 for easy deployment by anyone) to be replicated by others, displaying content according to
 the wishes and whims of each individual website operator, giving readers ultimate choice
-over the set of moderation opinions they wish to heed. 
+over the set of moderation opinions they wish to heed.
 
-Any user can create a new community, and each becomes a tuned 'lens' into the blockchain. Currently, there is one large window into the Steem blockchain and that is the global namespace as shown on Steemit.com. This is not ideal because everyone effectively has to share a single sandbox while having different goals as to what they want to see and what they want to build.
+Any user can create a new community, and each becomes a tuned 'lens' into the blockchain. Currently, there is one large window into the dPay blockchain and that is the global namespace as shown on dSite.io. This is not ideal because everyone effectively has to share a single sandbox while having different goals as to what they want to see and what they want to build.
 
 Many members want to see long-form, original content while many others just want to share links and snippets. We have a diverse set of sub-communities though they share a global tag namespace with no ownership and little ability to formally organize.
 
@@ -105,11 +103,11 @@ The standard format for `custom_json` ops:
 {
   required_auths: [],
   required_posting_auths: [<account>],
-  id: "com.steemit.community",
+  id: "com.dsite.community",
   json: [
-    <action>, 
+    <action>,
     {
-      community: <community>, 
+      community: <community>,
       <params*>
     }
   ]
@@ -129,7 +127,7 @@ Must be submitted by an *admin* or the community *owner* account.
 
 ```
 ["create", {
-  "community": <account>, 
+  "community": <account>,
   "type": <type>,
   "admins": [<admins>]
 }]
@@ -142,7 +140,7 @@ Must be submitted by an *admin* or the community *owner* account.
 
 ```
 ["addAdmins", {
-  "community": <community>, 
+  "community": <community>,
   "accounts": [ <account>, ... ]
 }]
 ```
@@ -151,7 +149,7 @@ Must be submitted by an *admin* or the community *owner* account.
 
 ```
 ["removeAdmins", {
-  "community": <community>, 
+  "community": <community>,
   "accounts": [ <account>, ... ]
 }]
 ```
@@ -162,7 +160,7 @@ Must be submitted by an *admin* or the community *owner* account.
 
 ```
 ["addMods", {
-  "community": <community>, 
+  "community": <community>,
   "accounts": [ <account>, ... ]
 }]
 ```
@@ -171,7 +169,7 @@ Must be submitted by an *admin* or the community *owner* account.
 
 ```
 ["removeMods", {
-  "community": <community>, 
+  "community": <community>,
   "accounts": [ <account>, ... ]
 }]
 ```
@@ -183,7 +181,7 @@ Must be submitted by an *admin* or the community *owner* account.
 
 ```
 ["updateSettings", {
-  "community": <community>, 
+  "community": <community>,
   "settings": { <key:value>, ... }
 }]
 ```
@@ -197,7 +195,7 @@ In restricted communities, gives topic-creation permission to the named accounts
 
 ```
 ["addPosters", {
-  "community": <community>, 
+  "community": <community>,
   "accounts": [ <account>, ... ]
 }]
 ```
@@ -206,7 +204,7 @@ In restricted communities, gives topic-creation permission to the named accounts
 
 ```
 ["removePosters", {
-  "community": <community>, 
+  "community": <community>,
   "accounts": [ <account>, ... ]
 }]
 ```
@@ -217,7 +215,7 @@ Muting a user prevents their topics and comments from being shown in the communi
 
 ```
 ["muteUser", {
-  "community": <community>, 
+  "community": <community>,
   "account": <account>
 }]
 ```
@@ -226,7 +224,7 @@ Muting a user prevents their topics and comments from being shown in the communi
 
 ```
 ["unmuteUser", {
-  "community": <community>, 
+  "community": <community>,
   "account": <account>
 }]
 ```
@@ -313,10 +311,10 @@ To mark a post as belonging to a community, set the `community` key in `json_met
 
 ```
 {
-    "community": "steemit",
-    "app": "steemit/0.1",
+    "community": "dsite",
+    "app": "dsite/0.1",
     "format": "html",
-    "tags": ["steemit", "steem"],
+    "tags": ["dsite", "dpay"],
     [...]
 }
 ```

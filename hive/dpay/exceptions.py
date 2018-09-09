@@ -7,7 +7,7 @@ def _str_trunc(value, max_length):
     return value
 
 class RPCError(Exception):
-    """Raised when an error is returned from upstream (jussi/steem)."""
+    """Raised when an error is returned from upstream (jefferson/dpay)."""
 
     @staticmethod
     def build(error, body, index=None):
@@ -43,21 +43,21 @@ class RPCError(Exception):
 
     @staticmethod
     def humanize(error):
-        """Get friendly error string from steemd RPC response."""
+        """Get friendly error string from dpayd RPC response."""
         message = error['message'] if 'message' in error else str(error)
         code = error['code'] if 'code' in error else -1
 
         info = ''
         if 'data' not in error: # eg db_lock_error
             name = 'error'
-        elif 'name' in error['data']: # steemd errs
+        elif 'name' in error['data']: # dpayd errs
             name = error['data']['name']
-        elif 'error_id' in error['data']: # jussi errs
+        elif 'error_id' in error['data']: # jefferson errs
             if 'exception' in error['data']:
                 name = error['data']['exception']
             else:
                 name = 'unspecified exception'
-            info = '[jussi:%s]' % error['data']['error_id']
+            info = '[jefferson:%s]' % error['data']['error_id']
         else:
             name = 'unspecified error'
             info = str(error)
@@ -65,5 +65,5 @@ class RPCError(Exception):
         return "%s[%s]: `%s` %s" % (name, code, message, info)
 
 class RPCErrorFatal(RPCError):
-    """Represents a steemd error which is not recoverable."""
+    """Represents a dpayd error which is not recoverable."""
     pass

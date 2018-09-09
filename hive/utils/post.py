@@ -1,4 +1,4 @@
-"""Methods for normalizing steemd post metadata."""
+"""Methods for normalizing dpayd post metadata."""
 #pylint: disable=line-too-long
 
 import math
@@ -53,7 +53,7 @@ def post_basic(post):
             is_payout_declined = True
 
     # payout entirely in SP
-    is_full_power = int(post['percent_steem_dollars']) == 0
+    is_full_power = int(post['percent_dpay_dollars']) == 0
 
     return {
         'json_metadata': md,
@@ -76,7 +76,7 @@ def post_legacy(post):
     """
     _legacy = ['id', 'url', 'root_comment', 'root_author', 'root_permlink',
                'root_title', 'parent_author', 'parent_permlink',
-               'max_accepted_payout', 'percent_steem_dollars',
+               'max_accepted_payout', 'percent_dpay_dollars',
                'curator_payout_value', 'allow_replies', 'allow_votes',
                'allow_curation_rewards', 'beneficiaries']
     return {k: v for k, v in post.items() if k in _legacy}
@@ -91,7 +91,7 @@ def post_payout(post):
     ])
 
     # `active_votes` was temporarily missing in dev -- ensure this condition
-    # is caught ASAP. if no active_votes then rshares MUST be 0. ref: steem#2568
+    # is caught ASAP. if no active_votes then rshares MUST be 0. ref: dpay#2568
     assert post['active_votes'] or int(post['net_rshares']) == 0
 
     # get total rshares, and create comma-separated vote data blob
@@ -119,7 +119,7 @@ def _vote_csv_row(vote):
 def _score(rshares, created_timestamp, timescale=480000):
     """Calculate trending/hot score.
 
-    Source: calculate_score - https://github.com/steemit/steem/blob/8cd5f688d75092298bcffaa48a543ed9b01447a6/libraries/plugins/tags/tags_plugin.cpp#L239
+    Source: calculate_score - https://github.com/dpays/dpay/blob/8cd5f688d75092298bcffaa48a543ed9b01447a6/libraries/plugins/tags/tags_plugin.cpp#L239
     """
     mod_score = rshares / 10000000.0
     order = math.log10(max((abs(mod_score), 1)))
@@ -129,7 +129,7 @@ def _score(rshares, created_timestamp, timescale=480000):
 def post_stats(post):
     """Get post statistics and derived properties.
 
-    Source: contentStats - https://github.com/steemit/condenser/blob/master/src/app/utils/StateFunctions.js#L109
+    Source: contentStats - https://github.com/dpays/condenser/blob/master/src/app/utils/StateFunctions.js#L109
     """
     net_rshares_adj = 0
     neg_rshares = 0

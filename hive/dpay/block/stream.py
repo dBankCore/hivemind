@@ -1,8 +1,8 @@
-"""Streams incoming blocks from the Steem blockchain."""
+"""Streams incoming blocks from the dPay blockchain."""
 
 import logging
 from time import sleep
-from hive.steem.block.schedule import BlockSchedule
+from hive.dpay.block.schedule import BlockSchedule
 
 log = logging.getLogger(__name__)
 

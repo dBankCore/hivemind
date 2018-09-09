@@ -6,7 +6,7 @@
 # to recover automatically, so database should be kept intact between restarts.
 
 # eb need to set: RUN_IN_EB, S3_BUCKET, SYNC_TO_S3 (boolean) if a syncer
-# hive expects: DATABASE_URL, LOG_LEVEL, STEEMD_URL, JUSSI_URL
+# hive expects: DATABASE_URL, LOG_LEVEL, DPAYD_URL, JEFFERSON_URL
 # default DATABASE_URL should be postgresql://postgres:postgres@localhost:5432/postgres
 
 POPULATE_CMD="$(which hive)"

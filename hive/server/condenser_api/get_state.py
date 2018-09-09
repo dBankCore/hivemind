@@ -5,7 +5,7 @@ import logging
 from collections import OrderedDict
 import ujson as json
 
-from hive.steem.client import SteemClient
+from hive.dpay.client import DPayClient
 from hive.db.methods import query_one
 from hive.utils.normalize import legacy_amount
 
@@ -32,9 +32,9 @@ import hive.server.condenser_api.cursor as cursor
 
 log = logging.getLogger(__name__)
 
-TMP_STEEM = SteemClient()
+TMP_DPAY = DPayClient()
 
-# steemd account 'tabs' - specific post list queries
+# dpayd account 'tabs' - specific post list queries
 ACCOUNT_TAB_KEYS = {
     '': 'blog',
     'feed': 'feed',
@@ -66,7 +66,7 @@ CONDENSER_NOOP_URLS = [
 async def get_state(path: str):
     """`get_state` reimplementation.
 
-    See: https://github.com/steemit/steem/blob/06e67bd4aea73391123eca99e1a22a8612b0c47e/libraries/app/database_api.cpp#L1937
+    See: https://github.com/dpays/dpay/blob/06e67bd4aea73391123eca99e1a22a8612b0c47e/libraries/app/database_api.cpp#L1937
     """
     (path, part) = _normalize_path(path)
 
@@ -187,7 +187,7 @@ def _load_account(name):
     #for key in ['recent_replies', 'comments', 'feed', 'blog']:
     #    account[key] = []
     # need to audit all assumed condenser keys..
-    account = TMP_STEEM.get_accounts([name])[0]
+    account = TMP_DPAY.get_accounts([name])[0]
     return account
 
 
@@ -208,9 +208,9 @@ def _load_posts_recursive(post_ids):
     return out
 
 def _get_feed_price():
-    """Get a steemd-style ratio object representing feed price."""
-    price = query_one("SELECT usd_per_steem FROM hive_state")
-    return {"base": "%.3f SBD" % price, "quote": "1.000 STEEM"}
+    """Get a dpayd-style ratio object representing feed price."""
+    price = query_one("SELECT usd_per_dpay FROM hive_state")
+    return {"base": "%.3f SBD" % price, "quote": "1.000 BEX"}
 
 def _get_props_lite():
     """Return a minimal version of get_dynamic_global_properties data."""
@@ -218,8 +218,8 @@ def _get_props_lite():
 
     # convert NAI amounts to legacy
     nais = ['virtual_supply', 'current_supply', 'current_sbd_supply',
-            'pending_rewarded_vesting_steem', 'pending_rewarded_vesting_shares',
-            'total_vesting_fund_steem', 'total_vesting_shares']
+            'pending_rewarded_vesting_dpay', 'pending_rewarded_vesting_shares',
+            'total_vesting_fund_dpay', 'total_vesting_shares']
     for k in nais:
         if k in raw:
             raw[k] = legacy_amount(raw[k])
@@ -230,6 +230,6 @@ def _get_props_lite():
         sbd_interest_rate=raw['sbd_interest_rate'],
         head_block_number=raw['head_block_number'], #*
         total_vesting_shares=raw['total_vesting_shares'],
-        total_vesting_fund_steem=raw['total_vesting_fund_steem'],
+        total_vesting_fund_dpay=raw['total_vesting_fund_dpay'],
         last_irreversible_block_num=raw['last_irreversible_block_num'], #*
     )

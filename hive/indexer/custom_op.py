@@ -24,7 +24,7 @@ class CustomOp:
     def process_ops(cls, ops, block_num, block_date):
         """Given a list of operation in block, filter and process them."""
         for op in ops:
-            if op['id'] not in ['follow', 'com.steemit.community']:
+            if op['id'] not in ['follow', 'com.dsite.community']:
                 continue
 
             # we assume `required_posting_auths` is always used and length 1.
@@ -43,7 +43,7 @@ class CustomOp:
                 if block_num < 6000000 and not isinstance(op_json, list):
                     op_json = ['follow', op_json]  # legacy compat
                 cls._process_legacy(account, op_json, block_date)
-            elif op['id'] == 'com.steemit.community':
+            elif op['id'] == 'com.dsite.community':
                 if block_num > 23e6:
                     process_json_community_op(account, op_json, block_date)
 

@@ -51,7 +51,7 @@ def load_posts(ids, truncate_body=0):
 
 
 def _condenser_account_object(row):
-    """Convert an internal account record into legacy-steemd style."""
+    """Convert an internal account record into legacy-dpayd style."""
     return {
         'name': row['name'],
         'reputation': _rep_to_raw(row['reputation']),
@@ -104,7 +104,7 @@ def _condenser_post_object(row, truncate_body=0):
 
     post['root_title'] = raw_json['root_title']
     post['max_accepted_payout'] = raw_json['max_accepted_payout']
-    post['percent_steem_dollars'] = raw_json['percent_steem_dollars']
+    post['percent_dpay_dollars'] = raw_json['percent_dpay_dollars']
     post['url'] = raw_json['url']
 
     # not used by condenser, but may be useful
@@ -120,13 +120,13 @@ def _condenser_post_object(row, truncate_body=0):
     return post
 
 def _amount(amount, asset='SBD'):
-    """Return a steem-style amount string given a (numeric, asset-str)."""
+    """Return a dpay-style amount string given a (numeric, asset-str)."""
     if asset == 'SBD':
         return "%.3f SBD" % amount
     raise Exception("unexpected %s" % asset)
 
 def _hydrate_active_votes(vote_csv):
-    """Convert minimal CSV representation into steemd-style object."""
+    """Convert minimal CSV representation into dpayd-style object."""
     if not vote_csv:
         return []
     cols = 'voter,rshares,percent,reputation'.split(',')
@@ -134,7 +134,7 @@ def _hydrate_active_votes(vote_csv):
     return [dict(zip(cols, line.split(','))) for line in votes]
 
 def _json_date(date=None):
-    """Given a db datetime, return a steemd/json-friendly version."""
+    """Given a db datetime, return a dpayd/json-friendly version."""
     if not date:
         return '1969-12-31T23:59:59'
     return 'T'.join(str(date).split(' '))

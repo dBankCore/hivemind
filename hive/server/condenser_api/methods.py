@@ -1,4 +1,4 @@
-"""Steemd/condenser_api compatibility layer API methods."""
+"""DPayd/condenser_api compatibility layer API methods."""
 
 from functools import wraps
 
@@ -16,7 +16,7 @@ from hive.server.condenser_api.common import (
 # Follows Queries
 
 def _follow_type_to_int(follow_type: str):
-    """Convert steemd-style "follow type" into internal status (int)."""
+    """Convert dpayd-style "follow type" into internal status (int)."""
     assert follow_type in ['blog', 'ignore'], "invalid follow_type"
     return 1 if follow_type == 'blog' else 2
 
@@ -76,12 +76,12 @@ async def get_content_replies(parent: str, parent_permlink: str):
 # Discussion Queries
 
 def nested_query_compat(function):
-    """Unpack strange format used by some clients, accepted by steemd.
+    """Unpack strange format used by some clients, accepted by dpayd.
 
     Sometimes a discussion query object is nested inside a list[1]. Eg:
 
         {... "method":"condenser_api.get_discussions_by_hot",
-             "params":[{"tag":"steem","limit":1}]}
+             "params":[{"tag":"dpay","limit":1}]}
 
     In these cases jsonrpcserver dispatch just shoves it into the first
     arg. This decorator checks for this specific condition and unpacks

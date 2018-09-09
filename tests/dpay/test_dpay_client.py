@@ -4,19 +4,19 @@ import datetime
 import pytest
 
 from hive.utils.normalize import parse_time
-from hive.steem.client import SteemClient
+from hive.dpay.client import DPayClient
 
 @pytest.fixture
 def client():
-    return SteemClient(url='https://api.steemit.com')
+    return DPayClient(url='https://api.dpays.io')
 
 def test_instance(client):
-    assert isinstance(client, SteemClient)
+    assert isinstance(client, DPayClient)
 
 def test_get_accounts(client):
-    accounts = client.get_accounts(['steemit', 'test-safari'])
+    accounts = client.get_accounts(['dsite', 'test-safari'])
     assert len(accounts) == 2
-    assert accounts[0]['name'] == 'steemit'
+    assert accounts[0]['name'] == 'dsite'
 
 def test_get_content_batch(client):
     tuples = [('test-safari', 'may-spam'), ('test-safari', 'june-spam')]
@@ -58,7 +58,7 @@ def test_gdgp_extended(client):
     ret = client.gdgp_extended()
     assert 'dgpo' in ret
     assert 'head_block_number' in ret['dgpo']
-    assert 'usd_per_steem' in ret
+    assert 'usd_per_dpay' in ret
 
 def test_get_blocks_range(client):
     lbound = 23000000

@@ -1,18 +1,18 @@
-"""Tight and reliable steem API client for hive indexer."""
+"""Tight and reliable dPay API client for hive indexer."""
 
 import time
 from decimal import Decimal
 
 from hive.utils.stats import Stats
-from hive.utils.normalize import parse_amount, steem_amount, vests_amount
-from hive.steem.http_client import HttpClient
-from hive.steem.block.stream import BlockStream
+from hive.utils.normalize import parse_amount, dpay_amount, vests_amount
+from hive.dpay.http_client import HttpClient
+from hive.dpay.block.stream import BlockStream
 
-class SteemClient:
-    """Handles upstream calls to jussi/steemd, with batching and retrying."""
+class DPayClient:
+    """Handles upstream calls to jefferson/dpayd, with batching and retrying."""
 
-    def __init__(self, url='https://api.steemit.com', max_batch=50, max_workers=1):
-        assert url, 'steem-API endpoint undefined'
+    def __init__(self, url='https://api.dpays.io', max_batch=50, max_workers=1):
+        assert url, 'dpay-API endpoint undefined'
         assert max_batch > 0 and max_batch <= 5000
         assert max_workers > 0 and max_workers <= 64
 
@@ -33,7 +33,7 @@ class SteemClient:
         """Fetch multiple comment objects."""
         posts = self.__exec_batch('get_content', tuples)
         # TODO: how are we ensuring sequential results? need to set and sort id.
-        for post in posts: # sanity-checking jussi responses
+        for post in posts: # sanity-checking jefferson responses
             assert 'author' in post, "invalid post: %s" % post
         return posts
 
@@ -73,31 +73,31 @@ class SteemClient:
 
         # remove unused/deprecated keys
         unused = ['total_pow', 'num_pow_witnesses', 'confidential_supply',
-                  'confidential_sbd_supply', 'total_reward_fund_steem',
+                  'confidential_bbd_supply', 'total_reward_fund_dpay',
                   'total_reward_shares2']
         for key in unused:
             del dgpo[key]
 
         return {
             'dgpo': dgpo,
-            'usd_per_steem': self._get_feed_price(),
-            'sbd_per_steem': self._get_steem_price(),
-            'steem_per_mvest': SteemClient._get_steem_per_mvest(dgpo)}
+            'usd_per_dpay': self._get_feed_price(),
+            'bbd_per_dpay': self._get_dpay_price(),
+            'dpay_per_mvest': DPayClient._get_dpay_per_mvest(dgpo)}
 
     @staticmethod
-    def _get_steem_per_mvest(dgpo):
-        steem = steem_amount(dgpo['total_vesting_fund_steem'])
+    def _get_dpay_per_mvest(dgpo):
+        dpay = dpay_amount(dgpo['total_vesting_fund_dpay'])
         mvests = vests_amount(dgpo['total_vesting_shares']) / Decimal(1e6)
-        return "%.6f" % (steem / mvests)
+        return "%.6f" % (dpay / mvests)
 
     def _get_feed_price(self):
         # TODO: add latest feed price: get_feed_history.price_history[0]
         feed = self.__exec('get_feed_history')['current_median_history']
         units = dict([parse_amount(feed[k])[::-1] for k in ['base', 'quote']])
-        price = units['SBD'] / units['STEEM']
+        price = units['BBD'] / units['BEX']
         return "%.6f" % price
 
-    def _get_steem_price(self):
+    def _get_dpay_price(self):
         orders = self.__exec('get_order_book', [1])
         ask = Decimal(orders['asks'][0]['real_price'])
         bid = Decimal(orders['bids'][0]['real_price'])
@@ -119,13 +119,13 @@ class SteemClient:
         return [blocks[x] for x in block_nums]
 
     def __exec(self, method, params=None):
-        """Perform a single steemd call."""
+        """Perform a single dpayd call."""
         time_start = time.perf_counter()
         result = self._client.exec(method, params)
         total_time = (time.perf_counter() - time_start) * 1000
 
         batch_size = len(params[0]) if method == 'get_accounts' else 1
-        Stats.log_steem(method, total_time, batch_size)
+        Stats.log_dpay(method, total_time, batch_size)
         return result
 
     def __exec_batch(self, method, params):
@@ -141,5 +141,5 @@ class SteemClient:
             result.extend(part)
 
         total_time = (time.perf_counter() - time_start) * 1000
-        Stats.log_steem(method, total_time, len(params))
+        Stats.log_dpay(method, total_time, len(params))
         return result

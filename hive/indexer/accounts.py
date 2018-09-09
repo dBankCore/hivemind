@@ -92,7 +92,7 @@ class Accounts:
         return cls.dirty(set(DB.query_col(sql, limit=limit)))
 
     @classmethod
-    def flush(cls, steem, trx=False, spread=1):
+    def flush(cls, dpay, trx=False, spread=1):
         """Process all accounts flagged for update.
 
          - trx: bool - wrap the update in a transaction
@@ -107,7 +107,7 @@ class Accounts:
         if trx:
             log.info("[SYNC] update %d accounts", count)
 
-        cls._cache_accounts(accounts, steem, trx=trx)
+        cls._cache_accounts(accounts, dpay, trx=trx)
         return count
 
     @classmethod
@@ -122,14 +122,14 @@ class Accounts:
         DB.query(sql)
 
     @classmethod
-    def _cache_accounts(cls, accounts, steem, trx=True):
+    def _cache_accounts(cls, accounts, dpay, trx=True):
         """Fetch all `accounts` and write to db."""
         timer = Timer(len(accounts), 'account', ['rps', 'wps'])
         for name_batch in partition_all(1000, accounts):
             cached_at = datetime.now().strftime('%Y-%m-%dT%H:%M:%S')
 
             timer.batch_start()
-            batch = steem.get_accounts(name_batch)
+            batch = dpay.get_accounts(name_batch)
 
             timer.batch_lap()
             sqls = [cls._sql(acct, cached_at) for acct in batch]
@@ -141,7 +141,7 @@ class Accounts:
 
     @classmethod
     def _sql(cls, account, cached_at):
-        """Prepare a SQL query from a steemd account."""
+        """Prepare a SQL query from a dpayd account."""
         vote_weight = (vests_amount(account['vesting_shares'])
                        + vests_amount(account['received_vesting_shares'])
                        - vests_amount(account['delegated_vesting_shares']))

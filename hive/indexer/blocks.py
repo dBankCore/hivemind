@@ -104,23 +104,23 @@ class Blocks:
         return num
 
     @classmethod
-    def verify_head(cls, steem):
+    def verify_head(cls, dpay):
         """Perform a fork recovery check on startup."""
         hive_head = cls.head_num()
         if not hive_head:
             return
 
-        # move backwards from head until hive/steem agree
+        # move backwards from head until hive/dpay agree
         to_pop = []
         cursor = hive_head
         while True:
             assert hive_head - cursor < 25, "fork too deep"
             hive_block = cls._get(cursor)
-            steem_hash = steem.get_block(cursor)['block_id']
-            match = hive_block['hash'] == steem_hash
+            dpay_hash = dpay.get_block(cursor)['block_id']
+            match = hive_block['hash'] == dpay_hash
             log.info("[INIT] fork check. block %d: %s vs %s --- %s",
                      hive_block['num'], hive_block['hash'],
-                     steem_hash, 'ok' if match else 'invalid')
+                     dpay_hash, 'ok' if match else 'invalid')
             if match:
                 break
             to_pop.append(hive_block)
@@ -133,7 +133,7 @@ class Blocks:
                   hive_head - cursor, cursor + 1, hive_head)
 
         # we should not attempt to recover from fork until it's safe
-        fork_limit = steem.last_irreversible()
+        fork_limit = dpay.last_irreversible()
         assert cursor < fork_limit, "not proceeding until head is irreversible"
 
         cls._pop(to_pop)

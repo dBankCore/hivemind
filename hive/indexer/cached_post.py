@@ -99,7 +99,7 @@ class CachedPost:
     def delete(cls, post_id, author, permlink):
         """Handle a post deleted by a `delete_comment` op.
 
-        With steemd, posts can be 'deleted' or unallocated in certain
+        With dpayd, posts can be 'deleted' or unallocated in certain
         conditions. It requires foregoing convenient assumptions, e.g.:
 
          - author/permlink is unique and always references the same post
@@ -131,9 +131,9 @@ class CachedPost:
          - delete row from hive_posts so that it can be re-indexed (re-id'd)
             - comes at a risk of losing expensive entry on fork (and no undo)
          - create undo table for hive_posts, hive_follows, etc, & link to block
-         - rely on steemd's post.id instead of database autoincrement
-           - requires way to query steemd post objects by id to be useful
-             - batch get_content_by_ids in steemd would be /huge/ speedup
+         - rely on dpayd's post.id instead of database autoincrement
+           - requires way to query dpayd post objects by id to be useful
+             - batch get_content_by_ids in dpayd would be /huge/ speedup
          - create a consistent cache queue table or dirty flag col
         """
         # do not force-write unless cache spans this id.
@@ -151,7 +151,7 @@ class CachedPost:
         cls.update(author, permlink, post_id)
 
     @classmethod
-    def flush(cls, steem, trx=False, spread=1, full_total=None):
+    def flush(cls, dpay, trx=False, spread=1, full_total=None):
         """Process all posts which have been marked as dirty."""
         cls._load_noids() # load missing ids
         assert spread == 1, "not fully tested, use with caution"
@@ -169,7 +169,7 @@ class CachedPost:
             summary = ', '.join(summary) if summary else 'none'
             log.info("[PREP] posts cache process: %s", summary)
 
-        cls._update_batch(steem, tuples, trx, full_total=full_total)
+        cls._update_batch(dpay, tuples, trx, full_total=full_total)
         for url, _, _ in tuples:
             del cls._queue[url]
             if url in cls._ids:
@@ -278,7 +278,7 @@ class CachedPost:
         return gap
 
     @classmethod
-    def recover_missing_posts(cls, steem):
+    def recover_missing_posts(cls, dpay):
         """Startup routine that cycles through missing posts.
 
         This is used for (1) initial sync, and (2) recovering missing
@@ -286,16 +286,16 @@ class CachedPost:
         """
         gap = cls.dirty_missing()
         log.info("[INIT] %d missing post cache entries", gap)
-        while cls.flush(steem, trx=True, full_total=gap)['insert']:
+        while cls.flush(dpay, trx=True, full_total=gap)['insert']:
             gap = cls.dirty_missing()
 
     @classmethod
-    def _update_batch(cls, steem, tuples, trx=True, full_total=None):
+    def _update_batch(cls, dpay, tuples, trx=True, full_total=None):
         """Fetch, process, and write a batch of posts.
 
-        Given a set of posts, fetch from steemd and write them to the
+        Given a set of posts, fetch from dpayd and write them to the
         db. The `tuples` arg is the form of `[(url, id, level)*]`
-        representing posts which are to be fetched from steemd and
+        representing posts which are to be fetched from dpayd and
         updated in cache.
 
         Regarding _bump_last_id: there's a rare edge case when the last
@@ -314,7 +314,7 @@ class CachedPost:
             buffer = []
 
             post_args = [tup[0].split('/') for tup in tups]
-            posts = steem.get_content_batch(post_args)
+            posts = dpay.get_content_batch(post_args)
             post_ids = [tup[1] for tup in tups]
             post_levels = [tup[2] for tup in tups]
             for pid, post, level in zip(post_ids, posts, post_levels):
@@ -322,7 +322,7 @@ class CachedPost:
                     buffer.extend(cls._sql(pid, post, level=level))
                 else:
                     # When a post has been deleted (or otherwise DNE),
-                    # steemd simply returns a blank post  object w/ all
+                    # dpayd simply returns a blank post  object w/ all
                     # fields blank. While it's best to not try to cache
                     # already-deleted posts, it can happen during missed
                     # post sweep and while using `trail_blocks` > 0.

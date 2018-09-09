@@ -1,5 +1,5 @@
 # coding=utf-8
-"""Simple HTTP client for communicating with jussi/steem."""
+"""Simple HTTP client for communicating with jefferson/dpay."""
 
 from concurrent.futures import ThreadPoolExecutor, as_completed
 import logging
@@ -16,7 +16,7 @@ from urllib3.util import Retry
 from urllib3.connection import HTTPConnection
 from urllib3.exceptions import HTTPError
 
-from hive.steem.exceptions import RPCError, RPCErrorFatal
+from hive.dpay.exceptions import RPCError, RPCErrorFatal
 
 logging.getLogger('urllib3.connectionpool').setLevel(logging.WARNING)
 log = logging.getLogger(__name__)
@@ -79,7 +79,7 @@ def _rpc_body(method, args, _id=0):
     return dict(jsonrpc="2.0", id=_id, method=method, params=args)
 
 class HttpClient(object):
-    """Simple Steem JSON-HTTP-RPC API"""
+    """Simple dPay JSON-HTTP-RPC API"""
 
     METHOD_API = dict(
         get_block='block_api',
@@ -127,7 +127,7 @@ class HttpClient(object):
             self.request = partial(self.http.urlopen, 'POST', self.url)
 
     def rpc_body(self, method, args, is_batch=False):
-        """Build JSON request body for steemd RPC requests."""
+        """Build JSON request body for dpayd RPC requests."""
         fqm = self.METHOD_API[method] + '.' + method
 
         if not is_batch:
@@ -138,7 +138,7 @@ class HttpClient(object):
         return body
 
     def exec(self, method, args, is_batch=False):
-        """Execute a steemd RPC method, retrying on failure."""
+        """Execute a dpayd RPC method, retrying on failure."""
         what = "%s[%d]" % (method, len(args) if is_batch else 1)
         body = self.rpc_body(method, args, is_batch)
         body_data = json.dumps(body, ensure_ascii=False).encode('utf8')
@@ -153,7 +153,7 @@ class HttpClient(object):
                 response = self.request(body=body_data)
                 secs = perf() - start
 
-                info = {'jussi-id': response.headers.get('x-jussi-request-id'),
+                info = {'jefferson-id': response.headers.get('x-jefferson-request-id'),
                         'secs': round(secs, 3),
                         'try': tries}
 
