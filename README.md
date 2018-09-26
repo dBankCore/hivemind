@@ -1,8 +1,8 @@
 # Hivemind [ALPHA]
 
-#### Developer-friendly microservice powering social networks on the Steem blockchain.
+#### Developer-friendly microservice powering social networks on the dPay blockchain.
 
-Hive is a "consensus interpretation" layer for the Steem blockchain, maintaining the state of social features such as post feeds, follows, and communities. Written in Python, it synchronizes an SQL database with chain state, providing developers with a more flexible/extensible alternative to the raw steemd API.
+Hive is a "consensus interpretation" layer for the dPay blockchain, maintaining the state of social features such as post feeds, follows, and communities. Written in Python, it synchronizes an SQL database with chain state, providing developers with a more flexible/extensible alternative to the raw dpayd API.
 
 
 ## Development Environment
@@ -15,12 +15,12 @@ Dependencies:
 Installation:
 
 ```bash
-$ createdb hive
+$ createdb dpaypower
 $ export DATABASE_URL=postgresql://user:pass@localhost:5432/hive
 ```
 
 ```bash
-$ git clone https://github.com/steemit/hivemind.git
+$ git clone https://github.com/dpays/hivemind.git
 $ cd hivemind
 $ pip3 install -e .[test]
 ```
@@ -66,7 +66,7 @@ Hive is deployed as Docker container &mdash; see `Dockerfile`.
 | `LOG_LEVEL`              | `--log-level`        | INFO    |
 | `HTTP_SERVER_PORT`       | `--http-server-port` | 8080    |
 | `DATABASE_URL`           | `--database-url`     | postgresql://user:pass@localhost:5432/hive |
-| `STEEMD_URL`             | `--steemd-url`       | https://api.steemit.com |
+| `DPAYD_URL`              | `--dpayd-url`        | https://api.dpays.io |
 | `MAX_BATCH`              | `--max-batch`        | 50      |
 | `MAX_WORKERS`            | `--max-workers`      | 4       |
 | `TRAIL_BLOCKS`           | `--trail-blocks`     | 2       |
@@ -85,7 +85,7 @@ Precedence: CLI over ENV over hive.conf. Check `hive --help` for details.
  - 200GB storage for database
 
 
-### Steem config
+### dPay config
 
 Build flags
 
@@ -95,7 +95,7 @@ Build flags
 
 Plugins
 
- - `follow` - for reputation data (to be replaced with [reputation](https://github.com/steemit/steem/issues/1425))
+ - `follow` - for reputation data (to be replaced with [reputation](https://github.com/dpays/dpay/issues/1425))
  - `witness` - for account activity/bandwidth data
  - Not required: `tags`, `market_history`, `account_history`
 
@@ -118,7 +118,7 @@ max_wal_size = 4GB
 
 ## JSON-RPC API
 
-The minimum viable API is to remove the requirement for the `follow` and `tags` plugins (now rolled into [`condenser_api`](https://github.com/steemit/steem/blob/master/libraries/plugins/apis/condenser_api/condenser_api.cpp)) from the backend node while still being able to power condenser's non-wallet features. Thus, this is the core API set:
+The minimum viable API is to remove the requirement for the `follow` and `tags` plugins (now rolled into [`condenser_api`](https://github.com/dpays/dpay/blob/master/libraries/plugins/apis/condenser_api/condenser_api.cpp)) from the backend node while still being able to power condenser's non-wallet features. Thus, this is the core API set:
 
 ```
 condenser_api.get_followers
@@ -149,9 +149,9 @@ condenser_api.get_replies_by_last_update
 
 #### History
 
-Initially, the [steemit.com](https://steemit.com) app was powered exclusively by `steemd` nodes. It was purely a client-side app without *any* backend other than a public and permissionless API node. As powerful as this model is, there are two issues: (a) maintaining UI-specific indices/APIs becomes expensive when tightly coupled to critical consensus nodes; and (b) frontend developers must be able to iterate quickly and access data in flexible and creative ways without writing C++.
+Initially, the [dSite.io](https://dsite.io) app was powered exclusively by `dpayd` nodes. It was purely a client-side app without *any* backend other than a public and permissionless API node. As powerful as this model is, there are two issues: (a) maintaining UI-specific indices/APIs becomes expensive when tightly coupled to critical consensus nodes; and (b) frontend developers must be able to iterate quickly and access data in flexible and creative ways without writing C++.
 
-To relieve backend and frontend pressure, non-consensus and frontend-oriented concerns can be decoupled from `steemd` itself. This (a) allows the consensus node to focus on scalability and reliability, and (b) allows the frontend to maintain its own state layer, allowing for flexibility not feasible otherwise.
+To relieve backend and frontend pressure, non-consensus and frontend-oriented concerns can be decoupled from `dpayd` itself. This (a) allows the consensus node to focus on scalability and reliability, and (b) allows the frontend to maintain its own state layer, allowing for flexibility not feasible otherwise.
 
 Specifically, the goal is to completely remove the `follow` and `tags` plugins, as well as `get_state` from the backend node itself, and re-implement them in `hive`. In doing so, we form the foundational infrastructure on which to implement communities and more.
 
@@ -160,13 +160,13 @@ Specifically, the goal is to completely remove the `follow` and `tags` plugins, 
 ##### Hive tracks posts, relationships, social actions, custom operations, and derived states.
 
  - *discussions:* by blog, trending, hot, created, etc
- - *communities:* mod roles/actions, members, feeds (in 1.5; [spec](https://github.com/steemit/hivemind/blob/master/docs/communities.md))
+ - *communities:* mod roles/actions, members, feeds (in 1.5; [spec](https://github.com/dpays/dpay-/blob/master/docs/communities.md))
  - *accounts:* normalized profile data, reputation
  - *feeds:* un/follows and un/reblogs
 
 ##### Hive does not track most blockchain operations.
 
-For anything to do with wallets, orders, escrow, keys, recovery, or account history, query SBDS or steemd.
+For anything to do with wallets, orders, escrow, keys, recovery, or account history, query DPDS or dpayd.
 
 ##### Hive can be extended or leveraged to create:
 
@@ -175,7 +175,7 @@ For anything to do with wallets, orders, escrow, keys, recovery, or account hist
  - indexing custom profile data
  - reorganize old posts (categorize, filter, hide/show)
  - voting/polls (democratic or burn/send to vote)
- - modlists: (e.g. spammy, abuse, badtaste)
+ - modlists: (e.g. spammy, abuse, bad taste)
  - crowdsourced metadata
  - mentions indexing
  - full-text search
@@ -186,15 +186,15 @@ For anything to do with wallets, orders, escrow, keys, recovery, or account hist
 
 #### Core indexer
 
-Ingests blocks sequentially, processing operations relevant to accounts, post creations/edits/deletes, and custom_json ops for follows, reblogs, and communities. From these we build account and post lookup tables, follow/reblog state, and communities/members data. Built exclusively from raw blocks, it becomes the ground truth for internal state. Hive does not reimplement logic required for deriving payout values, reputation, and other statistics which are much more easily attained from steemd itself in the cache layer.
+Ingests blocks sequentially, processing operations relevant to accounts, post creations/edits/deletes, and custom_json ops for follows, reblogs, and communities. From these we build account and post lookup tables, follow/reblog state, and communities/members data. Built exclusively from raw blocks, it becomes the ground truth for internal state. Hive does not reimplement logic required for deriving payout values, reputation, and other statistics which are much more easily attained from dpayd itself in the cache layer.
 
 #### Cache layer
 
-Synchronizes the latest state of posts and users, allowing us to serve discussions and lists of posts with all expected information (title, preview, image, payout, votes, etc) without needing `steemd`. This layer is first built once the initial core indexing is complete. Incoming blocks trigger cache updates (including recalculation of trending score) for any posts referenced in `comment` or `vote` operations. There is a sweep to paid out posts to ensure they are updated in full with their final state.
+Synchronizes the latest state of posts and users, allowing us to serve discussions and lists of posts with all expected information (title, preview, image, payout, votes, etc) without needing `dpayd`. This layer is first built once the initial core indexing is complete. Incoming blocks trigger cache updates (including recalculation of trending score) for any posts referenced in `comment` or `vote` operations. There is a sweep to paid out posts to ensure they are updated in full with their final state.
 
 #### API layer
 
-Performs queries against the core and cache tables, merging them into a response in such a way that the frontend will not need to perform any additional calls to `steemd` itself. The initial API simply mimics steemd's `condenser_api` for backwards compatibility, but will be extended to leverage new opportunities and simplify application development.
+Performs queries against the core and cache tables, merging them into a response in such a way that the frontend will not need to perform any additional calls to `dpayd` itself. The initial API simply mimics dpayd's `condenser_api` for backwards compatibility, but will be extended to leverage new opportunities and simplify application development.
 
 
 #### Fork Resolution
@@ -207,7 +207,7 @@ The easiest way to avoid forks is to only index up to the last irreversible bloc
 2. Indexer trails a few blocks behind, by no more than 6s - 9s
 3. If missed blocks detected, back off from `head_block`
 4. Database constraints on block linking to detect failure asap
-5. If a fork is encountered between `hive_head` and `steem_head`, trivial recovery
+5. If a fork is encountered between `hive_head` and `dpay_head`, trivial recovery
 6. Otherwise, pop blocks until in sync. Inconsistent state possible but rare for `TRAIL_BLOCKS > 1`.
 7. A separate service with a greater follow distance creates periodic snapshots
 

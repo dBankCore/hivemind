@@ -11,12 +11,12 @@ services:
   hive:
     depends_on:
       - db
-    image: steemit/hive
+    image: dpay/hive
     build: .
     environment:
       DATABASE_URL: postgresql://testuser:testuserpass@db:5432/testdb
       LOG_LEVEL: INFO
-      STEEMD_URL: https://api.steemit.com
+      DPAYD_URL: https://api.dpays.io
     links:
       - db:db
     ports:

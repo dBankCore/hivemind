@@ -55,6 +55,6 @@ async def get_trending_tags(start_tag: str = '', limit: int = 250):
             'name': row['category'],
             'comments': row['total_posts'] - row['top_posts'],
             'top_posts': row['top_posts'],
-            'total_payouts': "%.3f SBD" % row['total_payouts']})
+            'total_payouts': "%.3f BBD" % row['total_payouts']})
 
     return out

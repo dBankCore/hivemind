@@ -210,14 +210,14 @@ def _load_posts_recursive(post_ids):
 def _get_feed_price():
     """Get a dpayd-style ratio object representing feed price."""
     price = query_one("SELECT usd_per_dpay FROM hive_state")
-    return {"base": "%.3f SBD" % price, "quote": "1.000 BEX"}
+    return {"base": "%.3f BBD" % price, "quote": "1.000 BEX"}
 
 def _get_props_lite():
     """Return a minimal version of get_dynamic_global_properties data."""
     raw = json.loads(query_one("SELECT dgpo FROM hive_state"))
 
     # convert NAI amounts to legacy
-    nais = ['virtual_supply', 'current_supply', 'current_sbd_supply',
+    nais = ['virtual_supply', 'current_supply', 'current_bbd_supply',
             'pending_rewarded_vesting_dpay', 'pending_rewarded_vesting_shares',
             'total_vesting_fund_dpay', 'total_vesting_shares']
     for k in nais:
@@ -226,8 +226,8 @@ def _get_props_lite():
 
     return dict(
         time=raw['time'], #*
-        sbd_print_rate=raw['sbd_print_rate'],
-        sbd_interest_rate=raw['sbd_interest_rate'],
+        bbd_print_rate=raw['bbd_print_rate'],
+        bbd_interest_rate=raw['bbd_interest_rate'],
         head_block_number=raw['head_block_number'], #*
         total_vesting_shares=raw['total_vesting_shares'],
         total_vesting_fund_dpay=raw['total_vesting_fund_dpay'],

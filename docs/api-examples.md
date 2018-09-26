@@ -7,13 +7,13 @@ http -j post http://localhost:8080 jsonrpc=2.0 id=1 method=condenser_api.get_fol
 http -j post http://localhost:8080 jsonrpc=2.0 id=1 method=condenser_api.get_following params:='{"account":"test-safari","start":"","follow_type":"blog","limit":10}'
 
 http -j post http://localhost:8080 jsonrpc=2.0 id=1 method=condenser_api.get_discussions_by_trending params:='{"start_author":"","start_permlink":"","tag":"","limit":10}'
-http -j post http://localhost:8080 jsonrpc=2.0 id=1 method=condenser_api.get_discussions_by_trending params:='{"start_author":"fredrikaa","start_permlink":"why-i-bought-my-brother-steem-for-christmas-and-how-you-can-do-the-same","tag":"","limit":2}'
+http -j post http://localhost:8080 jsonrpc=2.0 id=1 method=condenser_api.get_discussions_by_trending params:='{"start_author":"fredrikaa","start_permlink":"why-i-bought-my-brother-bex-for-christmas-and-how-you-can-do-the-same","tag":"","limit":2}'
 
 http -j post http://localhost:8080 jsonrpc=2.0 id=1 method=condenser_api.get_discussions_by_blog params:='{"tag":"test-safari"}'
 http -j post http://localhost:8080 jsonrpc=2.0 id=1 method=condenser_api.get_discussions_by_blog params:='{"start_author":"test-safari","start_permlink":"3umrbh-november-spam","tag":"test-safari","limit":3}'
 
 http -j post http://localhost:8080 jsonrpc=2.0 id=1 method=condenser_api.get_discussions_by_feed params:='{"tag":"test-safari"}'
-http -j post http://localhost:8080 jsonrpc=2.0 id=1 method=condenser_api.get_discussions_by_feed params:='{"tag":"test-safari","limit":3,"start_author":"steemitblog","start_permlink":"steemit-winter-update-2017-reflection-our-vision-statement-and-mission-and-a-look-forward"}'
+http -j post http://localhost:8080 jsonrpc=2.0 id=1 method=condenser_api.get_discussions_by_feed params:='{"tag":"test-safari","limit":3,"start_author":"dsiteblog","start_permlink":"dsite-winter-update-2017-reflection-our-vision-statement-and-mission-and-a-look-forward"}'
 
 http -j post http://localhost:8080 jsonrpc=2.0 id=1 method=condenser_api.get_discussions_by_comments params:='{"start_author":"test-safari","start_permlink":""}'
 http -j post http://localhost:8080 jsonrpc=2.0 id=1 method=condenser_api.get_discussions_by_comments params:='{"start_author":"test-safari","start_permlink":"re-test-safari-re-test-safari-i-m-hodling-20180122t213927522z","limit":3}'

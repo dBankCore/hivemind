@@ -1,1 +1,1 @@
-"""Hive steem-client tests."""
+"""Hive dpay-client tests."""

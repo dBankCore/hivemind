@@ -1,6 +1,6 @@
 #!/usr/local/bin/ruby
 
-WSURL = "ws://0.0.0.0:8090/ws"
+WSURL = "ws://0.0.0.0:1776/ws"
 
 require 'progress_bar'
 require 'faye/websocket'

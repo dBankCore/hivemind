@@ -113,13 +113,13 @@ Session.vim
 *.db
 /tests/fast-test.sh
 /tests/fastest-test.sh
-/tests/sbds-install.sh
+/tests/dpds-install.sh
 /tests/test.sh
 /tests/sync.sh
 /tests/failed_blocks/
 tests/failed_blocks/
 /envdir/
-/sbds.egg-info/
+/dpds.egg-info/
 /envd/
 /tests/envdir-to-envfile.sh
 /deploy/

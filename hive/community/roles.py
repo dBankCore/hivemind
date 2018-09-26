@@ -83,7 +83,7 @@ def get_community_privacy(community: str) -> str:
 
 
 def is_community_post_valid(community, comment_op: dict) -> str:
-    """ Given a new Steem post/comment, check if valid as per community rules
+    """ Given a new dSite post/comment, check if valid as per community rules
 
     For a comment to be valid, these conditions apply:
         - Post must be new (edits don't count)

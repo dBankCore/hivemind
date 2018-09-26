@@ -5,7 +5,7 @@ import math
 import ujson as json
 from funcy.seqs import first
 
-from hive.utils.normalize import sbd_amount, rep_log10, safe_img_url, parse_time, utc_timestamp
+from hive.utils.normalize import bbd_amount, rep_log10, safe_img_url, parse_time, utc_timestamp
 
 
 def post_basic(post):
@@ -45,7 +45,7 @@ def post_basic(post):
 
     # payout is declined if max_payout = 0, or if 100% is burned
     is_payout_declined = False
-    if sbd_amount(post['max_accepted_payout']) == 0:
+    if bbd_amount(post['max_accepted_payout']) == 0:
         is_payout_declined = True
     elif len(post['beneficiaries']) == 1:
         benny = first(post['beneficiaries'])
@@ -85,9 +85,9 @@ def post_payout(post):
     """Get current vote/payout data and recalculate trend/hot score."""
     # total payout (completed and/or pending)
     payout = sum([
-        sbd_amount(post['total_payout_value']),
-        sbd_amount(post['curator_payout_value']),
-        sbd_amount(post['pending_payout_value']),
+        bbd_amount(post['total_payout_value']),
+        bbd_amount(post['curator_payout_value']),
+        bbd_amount(post['pending_payout_value']),
     ])
 
     # `active_votes` was temporarily missing in dev -- ensure this condition
@@ -159,7 +159,7 @@ def post_stats(post):
 
     author_rep = rep_log10(post['author_reputation'])
     is_low_value = net_rshares_adj < -9999999999
-    has_pending_payout = sbd_amount(post['pending_payout_value']) >= 0.02
+    has_pending_payout = bbd_amount(post['pending_payout_value']) >= 0.02
 
     return {
         'hide': not has_pending_payout and (author_rep < 0),

@@ -8,8 +8,8 @@ from hive.utils.normalize import (
     block_num,
     block_date,
     vests_amount,
-    steem_amount,
-    sbd_amount,
+    dpay_amount,
+    bbd_amount,
     parse_amount,
     amount,
     legacy_amount,
@@ -40,11 +40,11 @@ def test_block_date():
 def test_vests_amount():
     assert vests_amount('4.549292 VESTS') == Decimal('4.549292')
 
-def test_steem_amount():
-    assert steem_amount('1.234567 STEEM') == Decimal('1.234567')
+def test_dpay_amount():
+    assert dpay_amount('1.234567 BEX') == Decimal('1.234567')
 
-def test_sbd_amount():
-    assert sbd_amount('1.001 SBD') == Decimal('1.001')
+def test_bbd_amount():
+    assert bbd_amount('1.001 BBD') == Decimal('1.001')
 
 def test_parse_amount():
     nai = [1231121, 6, '@@000000037']

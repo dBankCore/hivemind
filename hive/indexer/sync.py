@@ -204,10 +204,10 @@ class Sync:
         state = self._dpay.gdgp_extended()
         self._db.query("""UPDATE hive_state SET block_num = :block_num,
                        dpay_per_mvest = :spm, usd_per_dpay = :ups,
-                       sbd_per_dpay = :sps, dgpo = :dgpo""",
+                       bbd_per_dpay = :sps, dgpo = :dgpo""",
                        block_num=state['dgpo']['head_block_number'],
                        spm=state['dpay_per_mvest'],
                        ups=state['usd_per_dpay'],
-                       sps=state['sbd_per_dpay'],
+                       sps=state['bbd_per_dpay'],
                        dgpo=json.dumps(state['dgpo']))
         return state['dgpo']['head_block_number']

@@ -25,7 +25,7 @@ class Conf():
 
         # common
         add('--database-url', env_var='DATABASE_URL', required=False, help='database connection url', default='')
-        add('--dpayd-url', env_var='DPAYD_URL', required=False, help='dpayd/jefferson endpoint', default='https://api.dpays.io')
+        add('--dpayd-url', env_var='DPAYD_URL', required=False, help='dpayd/jefferson endpoint', default='https://dpayapi.com')
 
         # server
         add('--http-server-port', type=int, env_var='HTTP_SERVER_PORT', default=8080)

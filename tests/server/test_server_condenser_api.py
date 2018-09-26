@@ -19,8 +19,8 @@ async def test_get_state():
     assert await get_state('@xeroc/comments')
     assert await get_state('@xeroc/recent-replies')
 
-    assert await get_state('steem/@xeroc/python-steem-v0-1-1')
-    assert await get_state('steem/@xeroc/re-dercoco-re-xeroc-python-steem-v0-1-1-20160802t073430189z')
+    assert await get_state('dpay/@jared/dpay-go')
+    assert await get_state('dpay/@jared/dpay-go-new-release')
 
     assert await get_state('trending/blockchain')
 

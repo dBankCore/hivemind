@@ -21,7 +21,7 @@ tests_require = [
 setup(
     name='hivemind',
     version='0.0.1',
-    description='Developer-friendly microservice powering social networks on the Steem blockchain.',
+    description='Developer-friendly microservice powering social networks on the dPay blockchain.',
     long_description=open('README.md').read(),
     packages=find_packages(exclude=['scripts']),
     setup_requires=['pytest-runner'],
